@@ -2,10 +2,7 @@ var teclas = {
   UP: 38,
   DOWN: 40,
   LEFT: 37,
-  RIGHT: 39
-};
-
-var borrar = {
+  RIGHT: 39,
   BACKSPACE: 8
 };
 
@@ -15,7 +12,7 @@ var cuadrito = document.getElementById('area_de_dibujo');
 var papel = cuadrito.getContext('2d');
 var y = 150;
 var x = 150;
-
+var lineas = [];
 dibujarLinea('red', x - 1, y - 1, x + 1, y + 1, papel);
 
 function dibujarLinea(color, xinicial, yinicial, xfinal, yfinal, lienzo) {
@@ -26,6 +23,7 @@ function dibujarLinea(color, xinicial, yinicial, xfinal, yfinal, lienzo) {
   lienzo.lineTo(xfinal, yfinal);
   lienzo.stroke();
   lienzo.closePath();
+  lineas.push({ xinicial, yinicial, xfinal, yfinal });
 }
 
 function dibujarTeclado(evento) {
@@ -51,11 +49,24 @@ function dibujarTeclado(evento) {
       dibujarLinea(colorcito, x, y, x + movimiento, y, papel);
       x = x + movimiento;
       break;
+    case teclas.BACKSPACE:
+      borrarRayita('white', papel);
+      break;
   }
 }
 
-function borrarRayita(evento) {
-  if (evento.keyCode == borrar.BACKSPACE) {
-    dibujarLinea('red', x + 1, y + 1, x - 1, y - 1, papel);
-  }
+function borrarRayita(color, lienzo) {
+  console.log('called', lineas);
+
+  var linea = lineas.pop();
+  lienzo.beginPath();
+  lienzo.strokeStyle = color;
+  lienzo.lineWidth = 4;
+  lienzo.moveTo(linea.xinicial, linea.yinicial);
+  lienzo.lineTo(linea.xfinal, linea.yfinal);
+  lienzo.stroke();
+  lienzo.closePath();
+
+  x = linea.xinicial;
+  y = linea.yinicial;
 }
